@@ -3,7 +3,7 @@
     Created on : Aug 21, 2023, 4:33:08 PM
     Author     : Mari
 --%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -17,18 +17,10 @@
     <!-- Link para abrir o formulário de inclusão -->
     <a href="ServletProdutoFC?acao=formIncluir">Novo Produto</a>
     
-    <h2>Count: ${listaProdutosCount}</h2>
-    
-    <li>
-    <c:forEach items="${listaProdutos}" var="produto">
-        <ul>${produto.nome}</ul>
-    </c:forEach>
-    </li>
-    
     <table>
       <thead>
         <tr>
-          <th>ID</th>
+          <th>#</th>
           <th>Nome</th>
           <th>Quantidade</th>
           <th>Preço de Venda</th>
