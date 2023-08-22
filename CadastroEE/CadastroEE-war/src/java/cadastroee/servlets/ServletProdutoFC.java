@@ -5,17 +5,25 @@
 package cadastroee.servlets;
 
 import java.io.IOException;
+import java.util.List;
+
+import jakarta.ejb.EJB;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import cadastroee.model.Produto;
+import cadastroee.controller.ProdutoFacadeLocal;
 import java.io.PrintWriter;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  *
  * @author Mari
  */
 public class ServletProdutoFC extends HttpServlet {
+    @EJB
+    private ProdutoFacadeLocal facade;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -27,20 +35,59 @@ public class ServletProdutoFC extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet ServletProdutoFC</title>");            
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet ServletProdutoFC at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
+            throws ServletException, IOException {        
+        String acao = request.getParameter("acao");
+        if (acao == null) {
+            acao = "listar";
         }
+        
+        Integer idProduto;
+        Produto produto;
+        String destino = "ProdutoLista.jsp";
+        
+        switch (acao) {
+            case "listar":
+                List<Produto> listaProdutos = facade.findAll();  
+                request.setAttribute("listaProdutos", listaProdutos);
+                break;
+            case "excluir":
+                idProduto = Integer.parseInt(request.getParameter("idProduto"));
+                produto = facade.find(idProduto);
+                facade.remove(produto);
+                listaProdutos = facade.findAll();
+                request.setAttribute("listaProdutos", listaProdutos);
+                break;
+            case "alterar":
+                idProduto = Integer.parseInt(request.getParameter("idProduto"));
+                produto = facade.find(idProduto);
+                produto.setNome(request.getParameter("nome"));
+                produto.setQuantidade(Integer.parseInt(request.getParameter("quantidade")));
+                produto.setPrecoVenda(Float.parseFloat(request.getParameter("precoVenda")));
+                facade.edit(produto);
+                listaProdutos = facade.findAll();
+                request.setAttribute("listaProdutos", listaProdutos);
+                break;
+            case "incluir":
+                produto = new Produto();
+                produto.setNome(request.getParameter("nome"));
+                produto.setQuantidade(Integer.parseInt(request.getParameter("quantidade")));
+                produto.setPrecoVenda(Float.parseFloat(request.getParameter("precoVenda")));
+                facade.create(produto);
+                listaProdutos = facade.findAll();
+                request.setAttribute("listaProdutos", listaProdutos);
+                break;
+            case "formIncluir":
+                destino = "ProdutoDados.jsp";
+                break;
+            case "formAlterar":
+                idProduto = Integer.parseInt(request.getParameter("idProduto"));
+                produto = facade.find(idProduto);
+                request.setAttribute("produto", produto);
+                destino = "ProdutoDados.jsp";
+                break;
+                
+        }
+        request.getRequestDispatcher(destino).forward(request, response);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

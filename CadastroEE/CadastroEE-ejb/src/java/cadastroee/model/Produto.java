@@ -92,7 +92,7 @@ public class Produto implements Serializable {
         return precoVenda;
     }
 
-    public void setPrecoVenda(long precoVenda) {
+    public void setPrecoVenda(float precoVenda) {
         this.precoVenda = precoVenda;
     }
 
